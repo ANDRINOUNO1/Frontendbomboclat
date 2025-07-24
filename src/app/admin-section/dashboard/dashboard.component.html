@@ -1,41 +1,66 @@
-<div class="dashboard-basic-info">
-  <div class="dashboard-title">
-    <i class="fa fa-chart-bar"></i>
-    <span>Basic Information</span>
-  </div>
-  <div class="dashboard-cards">
-    <div *ngFor="let status of statusSummary" class="dashboard-card" [ngClass]="status.class">
-      <div class="dashboard-card-icon">
-        <i class="fa" [ngClass]="status.icon"></i>
+<!-- hotel-dashboard.component.html -->
+<div class="flex min-h-screen bg-gray-50">
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
+
+  <!-- Main Dashboard -->
+  <main class="flex-1 p-6 space-y-6">
+    <!-- Topbar/Header -->
+    <app-header></app-header>
+
+    <!-- Status Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div *ngFor="let status of statusSummary"
+           class="rounded-2xl shadow-lg p-6 text-white flex items-center justify-between transition hover:scale-105"
+           [ngClass]="status.bg">
+        <div class="space-y-1">
+          <p class="text-sm font-medium">{{ status.label }}</p>
+          <p class="text-3xl font-bold">{{ status.count }}</p>
+        </div>
+        <i class="fa text-4xl opacity-70" [ngClass]="status.icon"></i>
       </div>
-      <div class="dashboard-card-label">{{ status.label }}</div>
-      <div class="dashboard-card-value">{{ status.count }}</div>
     </div>
-  </div>
-</div>
 
-<div class="container">
-  <div class="header">
-    <h2>Traffic Trends</h2>
-    <div class="tabs">
-      <button 
-        class="tab" 
-        [class.active]="selectedTab === 'day'" 
-        (click)="selectTab('day')">Day</button>
-      <button 
-        class="tab" 
-        [class.active]="selectedTab === 'week'" 
-        (click)="selectTab('week')">Week</button>
-      <button 
-        class="tab" 
-        [class.active]="selectedTab === 'month'" 
-        (click)="selectTab('month')">Month</button>
+    <!-- Circle Indicator + Chart -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <!-- Circle Card -->
+      <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center justify-center">
+        <div class="relative w-28 h-28">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle class="text-gray-200" cx="50" cy="50" r="40" stroke-width="10" stroke="currentColor" fill="none" />
+            <circle class="text-blue-500" cx="50" cy="50" r="40" stroke-width="10" stroke="currentColor" fill="none"
+                    [attr.stroke-dasharray]="251"
+                    [attr.stroke-dashoffset]="251 - (vacantCount / allCount) * 251"
+                    stroke-linecap="round" />
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center text-xl font-bold text-blue-500">
+            {{ vacantCount }}
+          </div>
+        </div>
+        <p class="mt-4 text-gray-600 text-sm">Available Room Today</p>
+      </div>
+
+      <!-- Chart -->
+      <div class="col-span-2">
+        <app-chart-container [config]="chartConfig">
+          <canvas baseChart
+                  [data]="{
+                    labels: ['Vacant', 'Occupied', 'Reserved'],
+                    datasets: [{
+                      data: [vacantCount, occupiedCount, reservedCount],
+                      backgroundColor: ['#10b981', '#ef4444', '#facc15']
+                    }]
+                  }"
+                  [type]="'bar'">
+          </canvas>
+        </app-chart-container>
+      </div>
     </div>
-  </div>
-  <canvas #lineChart height="100"></canvas>
 
-  <div class="header">
-    <h2>Traffic Sources</h2>
-  </div>
-  <canvas #doughnutChart height="100"></canvas>
+    <!-- Bottom Components -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <app-activity></app-activity>
+      <app-usage></app-usage>
+    </div>
+  </main>
 </div>
