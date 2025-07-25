@@ -1,29 +1,17 @@
-<!-- hotel-dashboard.component.html -->
-<div class="flex min-h-screen bg-gray-50">
-  <!-- Sidebar -->
-  <app-sidebar></app-sidebar>
-
-  <!-- Main Dashboard -->
+<div>
   <main class="flex-1 p-6 space-y-6">
-    <!-- Topbar/Header -->
-    <app-header></app-header>
-
-    <!-- Status Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
       <div *ngFor="let status of statusSummary"
            class="rounded-2xl shadow-lg p-6 text-white flex items-center justify-between transition hover:scale-105"
            [ngClass]="status.bg">
-        <div class="space-y-1">
+        <div>
           <p class="text-sm font-medium">{{ status.label }}</p>
           <p class="text-3xl font-bold">{{ status.count }}</p>
         </div>
         <i class="fa text-4xl opacity-70" [ngClass]="status.icon"></i>
       </div>
     </div>
-
-    <!-- Circle Indicator + Chart -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      <!-- Circle Card -->
       <div class="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center justify-center">
         <div class="relative w-28 h-28">
           <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
@@ -39,28 +27,10 @@
         </div>
         <p class="mt-4 text-gray-600 text-sm">Available Room Today</p>
       </div>
-
-      <!-- Chart -->
-      <div class="col-span-2">
-        <app-chart-container [config]="chartConfig">
-          <canvas baseChart
-                  [data]="{
-                    labels: ['Vacant', 'Occupied', 'Reserved'],
-                    datasets: [{
-                      data: [vacantCount, occupiedCount, reservedCount],
-                      backgroundColor: ['#10b981', '#ef4444', '#facc15']
-                    }]
-                  }"
-                  [type]="'bar'">
-          </canvas>
-        </app-chart-container>
+      <div class="bg-white rounded-2xl shadow-md p-6 col-span-2">
+        <app-chart-container [chartOptions]="chartOptions"></app-chart-container>
       </div>
     </div>
-
-    <!-- Bottom Components -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <app-activity></app-activity>
-      <app-usage></app-usage>
-    </div>
+    <app-analytics></app-analytics>
   </main>
 </div>

@@ -1,24 +1,53 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { AnalyticsComponent } from '../analytics/analytics.component';
-import { ChartContainerComponent } from 'src.app/admin-section/dashboard/chart/chart-container.component';
+import { HttpClient } from '@angular/common/http';
+import { AnalyticsComponent } from './analytics/analytics.component';
+
+import { ChartContainerComponent } from './shared/chart/chart-container.component';
+import { RouterModule } from '@angular/router';
+import { ChartType } from 'ng-apexcharts';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    HttpClientModule,
+    RouterModule,
     AnalyticsComponent,
-    ChartContainerComponent
+    ChartContainerComponent,
   ],
   templateUrl: './dashboard.component.html',
+
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
   rooms: any[] = [];
   bookings: any[] = [];
+
+  chartOptions = {
+    series: [{
+      name: 'Rooms',
+      data: [10, 20, 15, 30, 25, 40, 35]
+    }],
+    chart: {
+      type: 'bar' as ChartType,
+      height: 350
+    },
+    xaxis: {
+      categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    },
+    dataLabels: {
+      enabled: false
+    },
+    stroke: {
+      show: true,
+      width: 2,
+      colors: ['transparent']
+    },
+    title: {
+      text: 'Room Usage This Week'
+    }
+  };
 
   constructor(private http: HttpClient) {}
 
@@ -27,26 +56,31 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchData() {
-    this.http.get<any[]>('/api/rooms').subscribe(rooms => this.rooms = rooms);
-    this.http.get<any[]>('/api/bookings').subscribe(bookings => this.bookings = bookings);
+    this.http.get<any[]>('/api/rooms').subscribe(rooms => {
+      this.rooms = rooms;
+    });
+
+    this.http.get<any[]>('/api/bookings').subscribe(bookings => {
+      this.bookings = bookings;
+    });
   }
 
-  get vacantCount() {
+  get vacantCount(): number {
     return this.rooms.filter(room => room.status === true).length;
   }
 
-  get occupiedCount() {
+  get occupiedCount(): number {
     return this.rooms.filter(room =>
       room.status === false ||
       this.bookings.some(b => b.room_id === room.id && b.pay_status === false)
     ).length;
   }
 
-  get reservedCount() {
+  get reservedCount(): number {
     return this.bookings.filter(b => !b.pay_status).length;
   }
 
-  get allCount() {
+  get allCount(): number {
     return this.rooms.length;
   }
 
