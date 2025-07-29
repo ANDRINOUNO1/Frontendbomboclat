@@ -1,11 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChartContainerComponent } from './chart/chart-container.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
 
 @NgModule({
-  declarations: [ChartContainerComponent],
-  imports: [CommonModule, NgApexchartsModule],
-  exports: [ChartContainerComponent],
+  declarations: [],
+  imports: [
+    CommonModule,
+    NgApexchartsModule
+  ],
+  exports: [
+    NgApexchartsModule // Export so you can use <apx-chart> outside SharedModule
+  ]
 })
 export class SharedModule {}

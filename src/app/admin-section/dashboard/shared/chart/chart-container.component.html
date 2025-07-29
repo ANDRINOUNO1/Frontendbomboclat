@@ -1,8 +1,14 @@
-<apx-chart
-  [series]="chartOptions.series || []"
-  [chart]="chartOptions.chart || { type: 'line' }"
-  [xaxis]="chartOptions.xaxis || {}"
-  [dataLabels]="chartOptions.dataLabels || {}"
-  [stroke]="chartOptions.stroke || {}"
-  [title]="chartOptions.title || {}"
-></apx-chart>
+<div
+  class="flex aspect-video justify-center text-xs p-4 rounded-lg shadow bg-[var(--card-bg)]"
+  [ngStyle]="getThemeStyles()"
+>
+  <apx-chart
+    [series]="chartOptions.series"
+    [chart]="chartOptions.chart"
+    [xaxis]="chartOptions.xaxis"
+    [title]="chartOptions.title"
+    [dataLabels]="chartOptions.dataLabels"
+    [legend]="chartOptions.legend"
+    [tooltip]="chartOptions.tooltip"
+  ></apx-chart>
+</div>
