@@ -42,6 +42,7 @@ export interface Room {
   floor: number;
   status: boolean; // true for available, false for occupied
   roomType?: RoomType; // Optional: populated if joined
+  RoomType?: RoomType; // Alternative property name used in fake backend
 }
 
 export interface PaymentDetails {

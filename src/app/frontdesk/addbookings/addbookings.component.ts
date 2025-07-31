@@ -6,9 +6,11 @@ import { Router } from '@angular/router';
 
 import { Booking, Guest, Availability, PaymentDetails, RoomType } from '../../_models/booking.model';
 import { RESERVATION_FEES } from '../../_models/entities';
+import { environment } from '../../environments/environments';
 
 @Component({
   selector: 'app-addbookings',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './addbookings.component.html',
   styleUrl: './addbookings.component.scss'
@@ -114,7 +116,7 @@ export class AddbookingsComponent implements OnInit {
   }
 
   loadRoomTypes() {
-    this.http.get<RoomType[]>('/api/room-types').subscribe({
+    this.http.get<RoomType[]>(`${environment.apiUrl}/room-types`).subscribe({
       next: (types) => {
         this.roomTypes = types;
         // Initialize selected room types
@@ -184,7 +186,7 @@ export class AddbookingsComponent implements OnInit {
           pay_status: true
         };
 
-        return this.http.post<Booking[]>('/api/bookings', bookingData).toPromise();
+        return this.http.post<Booking[]>(`${environment.apiUrl}/bookings`, bookingData).toPromise();
       });
 
       Promise.all(bookingPromises)

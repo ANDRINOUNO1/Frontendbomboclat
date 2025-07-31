@@ -1,10 +1,6 @@
 import { Routes } from '@angular/router';
-import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { ReservationComponent  } from './reservation/reservation.component';
-
 import { LoginComponent } from './login/login.component';
-
 import { AdminSectionComponent } from './admin-section/admin-section.component';
 import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './admin-section/dashboard/dashboard.component';
@@ -27,13 +23,11 @@ import { SuperhomeComponent } from './superadmin-sect/superhome.component';
 import { AccountListComponent } from './superadmin-sect/accountlist/account-list.component';
 import { PendingAccountsComponent } from './superadmin-sect/pendingaccount/pending-accounts.component';
 import { AddAccountsComponent } from './superadmin-sect/add-account.component';
-import path from 'path';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'reserve', component: ReservationComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'admin', component: AdminSectionComponent },
   {
     path: 'admin',
     component: AdminSectionComponent,
@@ -72,8 +66,3 @@ export const routes: Routes = [
     ]
   }
 ];
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }

@@ -69,7 +69,7 @@ export class BookingComponent implements OnInit {
   deleteBooking(id: number) {
     this.http.delete(`${environment.apiUrl}/bookings/${id}`).subscribe(() => {
       this.loadOccupiedRooms();
-      this.closePopup
+      this.closePopup();
     });
   }
   editMode = false;

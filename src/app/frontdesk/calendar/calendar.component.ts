@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { BookingModalComponent } from './booking-modal.component';
 import { CdkDragEnd, DragDropModule } from '@angular/cdk/drag-drop';
+import { environment } from '../../environments/environments';
 
 @Component({
   selector: 'app-calendar',
@@ -48,16 +49,16 @@ export class CalendarComponent implements OnInit {
   }
 
   loadData() {
-    this.http.get<RoomType[]>('/api/room-types').subscribe(types => {
+    this.http.get<RoomType[]>(`${environment.apiUrl}/room-types`).subscribe(types => {
       this.roomTypes = types;
       if (this.roomTypes.length) {
         this.selectedTypeId = this.roomTypes[0].id;
       }
 
-      this.http.get<Room[]>('/api/rooms').subscribe(rooms => {
+      this.http.get<Room[]>(`${environment.apiUrl}/rooms`).subscribe(rooms => {
         this.allRooms = rooms;
 
-        this.http.get<Booking[]>('/api/bookings').subscribe(bookings => {
+        this.http.get<Booking[]>(`${environment.apiUrl}/bookings`).subscribe(bookings => {
           this.bookings = bookings;
 
           console.log('Room Types:', this.roomTypes);
@@ -285,7 +286,7 @@ export class CalendarComponent implements OnInit {
     booking.availability.checkIn = newCheckIn.toISOString();
     booking.availability.checkOut = newCheckOut.toISOString();
 
-    this.http.patch(`/api/bookings/${booking.id}`, {
+    this.http.patch(`${environment.apiUrl}/bookings/${booking.id}`, {
       availability: {
         checkIn: booking.availability.checkIn,
         checkOut: booking.availability.checkOut

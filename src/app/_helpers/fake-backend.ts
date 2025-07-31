@@ -117,16 +117,16 @@ if (isBrowser) {
       for (let floor = 1; floor <= floors; floor++) {
         for (let i = 1; i <= roomsPerFloor; i++) {
           const baseNumber = roomType.id * 100 + i;
-          const room_number = `${baseNumber}-${floor}`;
+          const roomNumber = `${baseNumber}-${floor}`;
 
-          rooms.push({
-            id: rooms.length + 1,
-            room_number,
-            room_type_id: roomType.id,
-            floor,
-            status: true,
-            roomType
-          });
+                     rooms.push({
+             id: rooms.length + 1,
+             room_number: roomNumber,
+             room_type_id: roomType.id,
+             floor,
+             status: true,
+             RoomType: roomType
+           });
         }
       }
     });
@@ -312,22 +312,67 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
 
     function getRooms() {
-        let storedRooms = JSON.parse(localStorage.getItem('fake-rooms') || '[]');
-        // Re-link roomType from roomTypes
-        storedRooms = storedRooms.map((r: Room) => ({
+        let storedRooms: Room[] = [];
+        if (typeof window !== 'undefined') {
+          storedRooms = JSON.parse(localStorage.getItem('fake-rooms') || '[]');
+          storedRooms = storedRooms.map((r: Room) => ({
             ...r,
-            roomType: roomTypes.find((rt: RoomType) => rt.id === r.room_type_id)
-        }));
+            RoomType: roomTypes.find((rt: RoomType) => rt.id === r.room_type_id)
+          }));
+        } else {
+          storedRooms = [
+            {
+              id: 1,
+              room_number: '101-1',
+              room_type_id: 1,
+              floor: 1,
+              status: true,
+              RoomType: { id: 1, type: 'Classic', rate: 120 }
+            },
+            {
+              id: 2,
+              room_number: '102-1',
+              room_type_id: 2,
+              floor: 1,
+              status: false,
+              RoomType: { id: 2, type: 'Deluxe', rate: 200 }
+            }
+          ];
+        }
         return ok(storedRooms);
     }
 
 
     function getBookings() {
-      const updatedBookings = bookings.map(b => {
-        const room = rooms.find(r => r.id === b.room_id);
-        return { ...b, room };
-      });
-      return ok(updatedBookings);
+      let storedBookings: Booking[] = [];
+      if (typeof window !== 'undefined') {
+        storedBookings = JSON.parse(localStorage.getItem('fake-bookings') || '[]');
+        storedBookings = storedBookings.map(b => {
+          const room = rooms.find(r => r.id === b.room_id);
+          return { ...b, room };
+        });
+      } else {
+        storedBookings = [
+          {
+            id: 1,
+            room_id: 1,
+            guest: { first_name: 'John', last_name: 'Doe', email: 'john@example.com', phone: '1234567890', address: '123 Main St', city: 'New York' },
+            availability: { checkIn: '2024-06-01', checkOut: '2024-06-03', adults: 2, children: 0, rooms: 1 },
+            pay_status: true,
+            paidamount: 240,
+            room: {
+              id: 1,
+              room_number: '101-1',
+              room_type_id: 1,
+              floor: 1,
+              status: true,
+              RoomType: { id: 1, type: 'Classic', rate: 120 }
+            },
+            requests: ''
+          }
+        ];
+      }
+      return ok(storedBookings);
     }
 
     function updateBooking() {
