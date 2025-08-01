@@ -323,11 +323,35 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
 
     function getBookings() {
-      const updatedBookings = bookings.map(b => {
-        const room = rooms.find(r => r.id === b.room_id);
-        return { ...b, room };
-      });
-      return ok(updatedBookings);
+      let storedBookings: Booking[] = [];
+      if (typeof window !== 'undefined') {
+        storedBookings = JSON.parse(localStorage.getItem('fake-bookings') || '[]');
+        storedBookings = storedBookings.map(b => {
+          const room = rooms.find(r => r.id === b.room_id);
+          return { ...b, room };
+        });
+      } else {
+        storedBookings = [
+          {
+            id: 1,
+            room_id: 1,
+            guest: { first_name: 'John', last_name: 'Doe', email: 'john@example.com', phone: '1234567890', address: '123 Main St', city: 'New York' },
+            availability: { checkIn: '2024-06-01', checkOut: '2024-06-03', adults: 2, children: 0, rooms: 1 },
+            pay_status: true,
+            paidamount: 240,
+            room: {
+              id: 1,
+              roomNumber: '101-1',
+              room_type_id: 1,
+              floor: 1,
+              status: true,
+              RoomType: { id: 1, type: 'Classic', rate: 120 }
+            },
+            requests: ''
+          }
+        ];
+      }
+      return ok(storedBookings);
     }
 
     function updateBooking() {
