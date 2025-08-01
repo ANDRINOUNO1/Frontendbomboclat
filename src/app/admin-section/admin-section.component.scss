@@ -32,7 +32,7 @@
   --room-vacant: #e5c07b;
   --room-occupied: #ffe29a;
   --room-reserved: #4caf50;
-  --room-dueout: #9c27b0;
+  --room-dueout: #0e080f;
   --room-dirty: #e53935;
   --room-outoforder: #f44336;
   --room-default: #b4884d;
@@ -88,7 +88,8 @@
 
 .toggle-mode-btn,
 .logout-btn {
-  background: none;
+  background: #e74c3c;
+  padding: 0.5rem 1rem;
   border: none;
   color: var(--sidebar-text);
   font-size: 1rem;
@@ -355,7 +356,7 @@
 .toggle-mode-btn {
   background: none;
   border: none;
-  color: var(--text-color);
+  color: white;
   font-size: 1rem;
   margin-left: 1rem;
   cursor: pointer;

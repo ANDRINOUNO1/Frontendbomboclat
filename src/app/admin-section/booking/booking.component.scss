@@ -67,7 +67,14 @@
 input,
 select {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid #f5f5f5;
+  box-shadow: var(--shadow-medium);
+  position: relative;
+    padding-inline: 1.5rem;
+    padding-block: 0.75rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    font-color: var(--text-color);
 }
 
 .popup-actions {
@@ -200,4 +207,5 @@ p{
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  
 }
