@@ -6,10 +6,11 @@ import { Router } from '@angular/router';
 
 import { Booking, Guest, Availability, PaymentDetails, RoomType } from '../../_models/booking.model';
 import { RESERVATION_FEES } from '../../_models/entities';
+import { environment } from '../../../environments/environment';
+
 
 @Component({
   selector: 'app-addbookings',
-  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './addbookings.component.html',
   styleUrl: './addbookings.component.scss'
@@ -122,7 +123,7 @@ export class AddbookingsComponent implements OnInit {
 
 
   loadRoomTypes() {
-    this.http.get<RoomType[]>('/api/room-types').subscribe({
+    this.http.get<RoomType[]>(`${environment.apiUrl}/rooms/types`).subscribe({
       next: (types) => {
         this.roomTypes = types;
         types.forEach(roomType => {
@@ -184,53 +185,66 @@ export class AddbookingsComponent implements OnInit {
   this.errorMessage = '';
   this.successMessage = '';
 
-      const formValue = this.bookingForm.value;
-      const selectedRoomTypes = this.getSelectedRoomTypes();
-      
-      const bookingPromises = selectedRoomTypes.map(roomType => {
-        const bookingData = {
-          guest: formValue.guest,
-          availability: formValue.availability,
-          roomTypeId: roomType.id,
-          roomsCount: formValue.availability.rooms,
-          payment: {
-            ...formValue.payment,
-            amount: roomType.rate || this.reservationFee
-          },
-          requests: formValue.requests,
-          pay_status: true
-        };
+  const formValue = this.bookingForm.value;
+  const selectedRoomTypes = this.getSelectedRoomTypes();
 
-        return this.http.post<Booking[]>('/api/bookings', bookingData).toPromise();
-      });
-
-      Promise.all(bookingPromises)
-        .then((results) => {
-          this.loading = false;
-          const totalBookings = results.reduce((sum, result) => sum + (result?.length || 0), 0);
-          this.successMessage = `Successfully created ${totalBookings} booking(s)!`;
-          this.bookingForm.reset();
-          this.selectedRoomTypes = {};
-          this.roomTypes.forEach(roomType => {
-            this.selectedRoomTypes[roomType.id] = false;
-          });
-          this.initForm(); 
-          
-          setTimeout(() => {
-            this.router.navigate(['/frontdesk/frontdeskdashboard']);
-          }, 2000);
-        })
-        .catch((error) => {
-          this.loading = false;
-          this.errorMessage = error.error?.message || 'Failed to create booking';
-        });
-    } else {
-      this.markFormGroupTouched();
-      if (!this.hasSelectedRoomTypes()) {
-        this.errorMessage = 'Please select at least one room type';
-      }
-    }
+  // Basic validation for payment details
+  const payment = formValue.payment;
+  if (Number(payment.amount) < this.reservationFee) {
+    this.loading = false;
+    this.errorMessage = `Reservation fee must be at least ₱${this.reservationFee}.`;
+    return;
   }
+
+  const mode = payment.paymentMode;
+  if ((mode === 'GCash' || mode === 'Maya') && !payment.mobileNumber) {
+    this.loading = false;
+    this.errorMessage = 'Mobile number is required for GCash/Maya payments.';
+    return;
+  }
+  if (mode === 'Card' &&
+      (!payment.paymentMethod || !payment.cardNumber || !payment.expiry || !payment.cvv)) {
+    this.loading = false;
+    this.errorMessage = 'Please fill in all required card payment fields.';
+    return;
+  }
+
+  const bookingPayloads = selectedRoomTypes.map(roomType => ({
+    roomTypeId: roomType.id,
+    guest: formValue.guest,
+    roomsCount: formValue.availability.rooms,
+    availability: formValue.availability,
+    requests: formValue.requests || '',
+    payment: {
+      ...payment,
+      amount: Number(payment.amount)
+    },
+    pay_status: true,
+    paidamount: payment.amount
+  }));
+
+  const postRequests = bookingPayloads.map(payload =>
+    this.http.post(`${environment.apiUrl}/bookings`, payload).toPromise()
+  );
+
+  Promise.all(postRequests)
+    .then(results => {
+      this.successMessage = `Successfully created ${results.length} booking(s)!`;
+      this.bookingForm.reset();
+      this.selectedRoomTypes = {};
+      this.roomTypes.forEach(roomType => this.selectedRoomTypes[roomType.id] = false);
+      this.initForm();
+      setTimeout(() => {
+        this.router.navigate(['/frontdesk/frontdeskdashboard']);
+      }, 2000);
+    })
+    .catch(err => {
+      this.errorMessage = err.error?.message || 'Failed to create booking.';
+    })
+    .finally(() => {
+      this.loading = false;
+    });
+}
 
   markFormGroupTouched() {
     Object.keys(this.bookingForm.controls).forEach(key => {

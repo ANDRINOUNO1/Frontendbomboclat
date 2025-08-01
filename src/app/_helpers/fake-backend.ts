@@ -341,7 +341,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             paidamount: 240,
             room: {
               id: 1,
-              room_number: '101-1',
+              roomNumber: '101-1',
               room_type_id: 1,
               floor: 1,
               status: true,
