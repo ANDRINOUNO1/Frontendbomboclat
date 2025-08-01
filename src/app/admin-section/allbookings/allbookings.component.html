@@ -1,3 +1,4 @@
+<div class="allbookings-container" id="all-bookings-content">
 <div class="room-view-container">
   <div class="room-view-header">
    <div class="header-bar" style="display: flex; align-items: center; justify-content: space-between;">
@@ -38,9 +39,9 @@
         <td>
             <span class="status-label" [ngClass]="room.paymentStatus">{{ room.paymentStatus }}</span>
         </td>
-        <td>
-          <button (click)="openViewPopup(room)">View</button>
-        </td>
+                 <td>
+           <button class="btn-view" (click)="openViewPopup(room)">View</button>
+         </td>
       </tr>
     </tbody>
   </table>

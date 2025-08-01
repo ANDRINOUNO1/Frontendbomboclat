@@ -1,17 +1,19 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { AnalyticsComponent } from './analytics/analytics.component';
-import { environment } from '../../environments/environments';
+import { LoadingSpinnerComponent } from '../../_components/loading-spinner.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, AnalyticsComponent],
+  imports: [CommonModule, LoadingSpinnerComponent],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  isLoading = true;
   rooms: any[] = [];
   bookings: any[] = [];
   private dataLoaded = false;
@@ -28,26 +30,33 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchData() {
-    this.http.get<any[]>(`${environment.apiUrl}/api/rooms`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/rooms`).subscribe({
       next: (rooms) => {
         this.rooms = rooms;
-        this.dataLoaded = true;
+        this.checkLoadingComplete();
       },
-      error: (error) => {
-        console.error('Error fetching rooms:', error);
-        this.rooms = [];
+      error: (err) => {
+        console.error('Failed to load rooms:', err);
+        this.checkLoadingComplete();
       }
     });
-    this.http.get<any[]>(`${environment.apiUrl}/api/bookings`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/bookings`).subscribe({
       next: (bookings) => {
         this.bookings = bookings;
-        this.dataLoaded = true;
+        this.checkLoadingComplete();
       },
-      error: (error) => {
-        console.error('Error fetching bookings:', error);
-        this.bookings = [];
+      error: (err) => {
+        console.error('Failed to load bookings:', err);
+        this.checkLoadingComplete();
       }
     });
+  }
+
+  checkLoadingComplete() {
+    // Hide loading after data is loaded
+    setTimeout(() => {
+      this.isLoading = false;
+    }, 500);
   }
 
   get vacantCount() {

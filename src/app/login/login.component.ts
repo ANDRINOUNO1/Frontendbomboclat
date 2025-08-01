@@ -12,11 +12,14 @@ import { AccountService } from '../_services/account.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
-  username = '';
+
+  email = '';
   password = '';
   keepLoggedIn = false;
+  showPassword = false;
   error = '';
   isLoading = false;
+  rightImage = ''; 
 
   signupName = '';
   signupEmail = '';
@@ -27,11 +30,16 @@ export class LoginComponent {
 
   constructor(private router: Router, private accountService: AccountService) {}
 
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
   login() {
     this.isLoading = true;
     this.error = '';
     
-    this.accountService.login(this.username, this.password).subscribe({
+    // FIX: Pass 'this.email' to the login service
+    this.accountService.login(this.email, this.password).subscribe({
       next: (account) => {
         this.isLoading = false;
 
@@ -51,13 +59,5 @@ export class LoginComponent {
         console.log('Login failed, account state:', this.accountService.accountValue);
       }
     });
-  }
-
-  signup() {
-    this.signupMsg = 'Account created! You can now sign in.';
-    setTimeout(() => {
-      this.activeTab = 'signin';
-      this.signupMsg = '';
-    }, 1500);
   }
 }

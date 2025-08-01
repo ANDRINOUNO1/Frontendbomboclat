@@ -121,7 +121,7 @@ if (isBrowser) {
 
                      rooms.push({
              id: rooms.length + 1,
-             room_number: roomNumber,
+             roomNumber,
              room_type_id: roomType.id,
              floor,
              status: true,
@@ -312,33 +312,12 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
 
     function getRooms() {
-        let storedRooms: Room[] = [];
-        if (typeof window !== 'undefined') {
-          storedRooms = JSON.parse(localStorage.getItem('fake-rooms') || '[]');
-          storedRooms = storedRooms.map((r: Room) => ({
+        let storedRooms = JSON.parse(localStorage.getItem('fake-rooms') || '[]');
+        // Re-link RoomType from roomTypes
+        storedRooms = storedRooms.map((r: Room) => ({
             ...r,
             RoomType: roomTypes.find((rt: RoomType) => rt.id === r.room_type_id)
-          }));
-        } else {
-          storedRooms = [
-            {
-              id: 1,
-              room_number: '101-1',
-              room_type_id: 1,
-              floor: 1,
-              status: true,
-              RoomType: { id: 1, type: 'Classic', rate: 120 }
-            },
-            {
-              id: 2,
-              room_number: '102-1',
-              room_type_id: 2,
-              floor: 1,
-              status: false,
-              RoomType: { id: 2, type: 'Deluxe', rate: 200 }
-            }
-          ];
-        }
+        }));
         return ok(storedRooms);
     }
 

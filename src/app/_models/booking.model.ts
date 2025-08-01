@@ -33,16 +33,16 @@ export interface RoomType {
   id: number;
   type: string;
   rate?: number;
+  basePrice?: number;
 }
 
 export interface Room {
   id: number;
-  room_number: string;
+  roomNumber: string;
   room_type_id: number;
   floor: number;
   status: boolean; // true for available, false for occupied
-  roomType?: RoomType; // Optional: populated if joined
-  RoomType?: RoomType; // Alternative property name used in fake backend
+  RoomType?: RoomType; // Backend alias for room type
 }
 
 export interface PaymentDetails {
