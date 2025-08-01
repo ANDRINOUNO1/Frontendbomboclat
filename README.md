@@ -64,3 +64,12 @@ i install ni daan para larga na
 npm install --legacy-peer-deps
 
 GGS!
+
+
+
+
+Frontend update 
+
+working on the design. 
+making a apexchart.
+adjusting color of frontdeskdashboard & superadmindashboard 
