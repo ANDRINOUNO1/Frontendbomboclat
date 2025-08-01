@@ -132,3 +132,89 @@ body {
   font-family: 'Nunito', sans-serif;
   color: white;
 }
+
+/* Reservation specific styles from global styles */
+.reservation form {
+  border: var(--border);
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: 1rem;
+}
+
+.reservation form .flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.reservation form h3 {
+  background-color: var(--sub-color);
+  color: var(--main-bg);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  border-radius: .5rem;
+  padding: 1.2rem;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.reservation form .flex .box {
+  flex: 1 1 40rem;
+}
+
+.reservation form .flex .box p {
+  font-size: 1.8rem;
+  color: var(--white);
+}
+
+.reservation form .flex .box .input {
+  padding: 1rem 0;
+  margin: 1rem 0;
+  border-bottom: var(--border);
+  background: var(--main-bg);
+  color: var(--white);
+  font-size: 1.8rem;
+  width: 100%;
+}
+
+.reservation form .flex .box .input:focus {
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.reservation form .flex .box input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Availability form styles */
+.availability form .flex {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.availability form .flex .box {
+  flex: 1 1 20rem;
+}
+
+.availability form .flex .box p {
+  font-size: 2rem;
+  color: var(--sub-color);
+}
+
+.availability form .flex .box .input {
+  width: 100%;
+  padding: 1rem 0;
+  font-size: 1.8rem;
+  background-color: var(--main-bg);
+  color: var(--white);
+  border-bottom: var(--border);
+  margin: 1rem 0;
+}
+
+.availability form .flex .box .input:focus {
+  border-bottom: 2px solid var(--accent-color);
+}
+
+.availability form .flex .box input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}

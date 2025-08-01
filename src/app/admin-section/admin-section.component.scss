@@ -567,3 +567,17 @@ body.dark-mode {
 }
     }
   }
+
+/* Footer styles for admin section */
+.footer {
+  background: var(--gradient-touch);
+  padding: 2rem;
+  text-align: center;
+  color: var(--white);
+  margin-top: auto;
+}
+
+.footer p {
+  margin: 0.5rem 0;
+  font-size: 1.4rem;
+}

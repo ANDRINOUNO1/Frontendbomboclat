@@ -153,6 +153,60 @@ section{
   outline: none;
 }
 
+.header .flex .fa-bars{
+   font-size: 3rem;
+   cursor: pointer;
+   color: var(--sub-color);
+   display: none;
+}
+
+.header .navbar{
+   display: flex;
+   align-items: center;
+   justify-content: space-evenly;
+   gap: 1.5rem;
+   margin-top: 2rem;
+   background-color: var(--sub-color);
+   padding: .5rem;
+   border-radius: .5rem;
+}
+
+.header .navbar a{
+   font-size: 1.8rem;
+   color: var(--main-color);
+   padding: 1rem 3rem;
+   border-radius: .5rem;
+   transition: background 0.2s, color 0.2s;
+}
+
+.header .navbar a:hover{
+   background-color: var(--main-color);
+   color: var(--sub-color);
+}
+
+.book-now-btn {
+  margin-left: 3rem;
+  padding: 1.2rem 3.5rem;
+  font-size: 2rem;
+  border-radius: 10px;
+  background: var(--accent-color);
+  color: var(--white);
+  border: none;
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 8px rgba(26,26,128,0.08);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.book-now-btn:hover,
+.book-now-btn:focus {
+  background: var(--sub-color);
+  color: var(--main-color);
+  box-shadow: 0 4px 16px var(--accent-color);
+  outline: none;
+}
+
 .home .box img{
    border-radius: .5rem;
    height: 60vh;
