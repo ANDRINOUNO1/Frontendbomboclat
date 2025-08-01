@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-frontdesk',
+  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './frontdesk.component.html',
   styleUrl: './frontdesk.component.scss'
