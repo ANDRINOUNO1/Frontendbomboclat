@@ -13,6 +13,17 @@
     <strong>Success:</strong> {{ successMessage }}
   </div>
 
+  <!-- Debug Information (remove in production) -->
+  <div class="debug-info mb-4" style="background: #f0f0f0; padding: 10px; border-radius: 5px; font-size: 12px;">
+    <strong>Debug Info:</strong><br>
+    Form Valid: {{ bookingForm.valid }}<br>
+    Form Invalid: {{ bookingForm.invalid }}<br>
+    Room Types Selected: {{ hasSelectedRoomTypes() }}<br>
+    Is Form Valid (Custom): {{ isFormValid() }}<br>
+    Payment Mode: {{ bookingForm.get('payment.paymentMode')?.value }}<br>
+    Amount: {{ bookingForm.get('payment.amount')?.value }}
+  </div>
+
   <form [formGroup]="bookingForm" (ngSubmit)="onSubmit()" class="booking-form">
     
     <!-- Guest Information Section -->
@@ -329,7 +340,7 @@
       <button 
         type="submit" 
         class="btn btn-primary"
-        [disabled]="loading || bookingForm.invalid">
+        [disabled]="loading || !isFormValid()">
         <span *ngIf="loading" class="spinner"></span>
         {{ loading ? 'Creating Booking...' : 'Create Booking' }}
       </button>

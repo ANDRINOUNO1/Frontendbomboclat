@@ -6,8 +6,7 @@
         border: 1px solid var(--card-border);
         border-radius: 10px; /* Rounded corners for the table */
         overflow: hidden;
-        color: #2c3e50;
-
+        color: var(--text-color);
 }
 .tables th,
 .tables td {

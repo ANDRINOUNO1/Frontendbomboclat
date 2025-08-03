@@ -3,12 +3,6 @@
   padding: 2rem;
   font-family: Arial, sans-serif;
 }
-h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.5rem;
-}
 
 .tables {
   width: 100%;
@@ -36,14 +30,13 @@ h2 {
   }
 }
 
-
 .popup-backdrop {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(250, 225, 225, 0.4);
+  background: rgba(0, 0, 0, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -62,7 +55,7 @@ h2 {
 
 .popup h3 {
   background: linear-gradient(90deg, #4f46e5, #3b82f6);
-  color: #e7dddd;
+  color: #fff;
   padding: 1rem 1.5rem;
   border-radius: 8px;
   margin: 0;

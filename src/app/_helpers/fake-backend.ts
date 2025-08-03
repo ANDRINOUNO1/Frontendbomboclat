@@ -82,10 +82,10 @@ if (isBrowser) {
 
   if (!roomTypes) {
     roomTypes = [
-      { id: 1, type: 'Classic', rate: 120 },
-      { id: 2, type: 'Deluxe', rate: 200 },
-      { id: 3, type: 'Prestige', rate: 150 },
-      { id: 4, type: 'Luxury', rate: 80 }
+      { id: 1, type: 'Classic', rate: 120, basePrice: 120, description: 'Comfortable and affordable accommodation with essential amenities', reservationFeePercentage: 10.00 },
+      { id: 2, type: 'Deluxe', rate: 200, basePrice: 200, description: 'Enhanced amenities and spacious rooms for a premium experience', reservationFeePercentage: 15.00 },
+      { id: 3, type: 'Prestige', rate: 150, basePrice: 150, description: 'Luxury accommodations with premium services and amenities', reservationFeePercentage: 12.50 },
+      { id: 4, type: 'Luxury', rate: 80, basePrice: 80, description: 'Ultimate luxury experience with top-tier amenities and services', reservationFeePercentage: 8.00 }
     ];
     localStorage.setItem(roomTypesKey, JSON.stringify(roomTypes));
   }
@@ -135,12 +135,78 @@ if (isBrowser) {
   }
 }
 
+// Initialize data for SSR/build time
+if (!isBrowser) {
+  // Initialize with default data for server-side rendering
+  accounts = [
+    {
+      id: '1',
+      title: 'superadmin',
+      firstName: 'Super',
+      lastName: 'Admin',
+      email: 'superadmin@example.com',
+      status: 'Active',
+      role: Role.SuperAdmin,
+      password: 'superadmin123'
+    },
+    {
+      id: '3',
+      title: 'admin',
+      firstName: 'Admin',
+      lastName: 'User',
+      email: 'admin@example.com',
+      status: 'Active',
+      role: Role.Admin,
+      password: 'admin123'
+    },
+    {
+      id: '2',
+      title: 'frontdesk',
+      firstName: 'Front',
+      lastName: 'Desk',
+      email: 'frontdesk@example.com',
+      status: 'Active',
+      role: Role.frontdeskUser,
+      password: 'frontdesk123'
+    }
+  ];
+
+  roomTypes = [
+    { id: 1, type: 'Classic', rate: 120, basePrice: 120, description: 'Comfortable and affordable accommodation with essential amenities', reservationFeePercentage: 10.00 },
+    { id: 2, type: 'Deluxe', rate: 200, basePrice: 200, description: 'Enhanced amenities and spacious rooms for a premium experience', reservationFeePercentage: 15.00 },
+    { id: 3, type: 'Prestige', rate: 150, basePrice: 150, description: 'Luxury accommodations with premium services and amenities', reservationFeePercentage: 12.50 },
+    { id: 4, type: 'Luxury', rate: 80, basePrice: 80, description: 'Ultimate luxury experience with top-tier amenities and services', reservationFeePercentage: 8.00 }
+  ];
+
+  rooms = [
+    { id: 1, roomNumber: '101', room_type_id: 1, floor: 1, status: true },
+    { id: 2, roomNumber: '102', room_type_id: 1, floor: 1, status: true },
+    { id: 3, roomNumber: '201', room_type_id: 2, floor: 2, status: true },
+    { id: 4, roomNumber: '202', room_type_id: 2, floor: 2, status: true }
+  ];
+
+  bookings = [];
+}
+
 @Injectable()
 export class FakeBackendInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const { url, method, headers, body } = request;
 
-    return handleRoute().pipe(materialize(), delay(500), dematerialize());
+    // Check if we're in a server-side rendering context
+    const isSSR = typeof window === 'undefined';
+    
+    // Handle all API requests during build time and SSR
+    if (isSSR || url.includes('/api/') || url.includes('/rooms') || url.includes('/bookings') || url.includes('/accounts')) {
+      try {
+        return handleRoute().pipe(materialize(), delay(500), dematerialize());
+      } catch (error) {
+        // During build time, return empty data to prevent errors
+        return of(new HttpResponse({ status: 200, body: [] }));
+      }
+    }
+
+    return next.handle(request);
 
     function handleRoute() {
       switch (true) {
@@ -172,8 +238,20 @@ export class FakeBackendInterceptor implements HttpInterceptor {
             return deleteBooking();
         case url.endsWith('/api/reset') && method === 'POST':
             return resetData();
+        // Handle direct API calls without /api prefix
+        case url.endsWith('/rooms') && method === 'GET':
+          return getRooms();
+        case url.endsWith('/bookings') && method === 'GET':
+          return getBookings();
+        case url.endsWith('/accounts') && method === 'GET':
+          return getAccounts();
+        case url.endsWith('/rooms/types') && method === 'GET':
+          return getRoomTypes();
+        case url.endsWith('/rooms/reservation-fee') && method === 'GET':
+          return getReservationFee();
         default:
-          return next.handle(request);
+          // For any other API request, return empty data to prevent build errors
+          return ok([]);
       }
     }
 
@@ -323,35 +401,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
 
     function getBookings() {
-      let storedBookings: Booking[] = [];
-      if (typeof window !== 'undefined') {
-        storedBookings = JSON.parse(localStorage.getItem('fake-bookings') || '[]');
-        storedBookings = storedBookings.map(b => {
-          const room = rooms.find(r => r.id === b.room_id);
-          return { ...b, room };
-        });
-      } else {
-        storedBookings = [
-          {
-            id: 1,
-            room_id: 1,
-            guest: { first_name: 'John', last_name: 'Doe', email: 'john@example.com', phone: '1234567890', address: '123 Main St', city: 'New York' },
-            availability: { checkIn: '2024-06-01', checkOut: '2024-06-03', adults: 2, children: 0, rooms: 1 },
-            pay_status: true,
-            paidamount: 240,
-            room: {
-              id: 1,
-              roomNumber: '101-1',
-              room_type_id: 1,
-              floor: 1,
-              status: true,
-              RoomType: { id: 1, type: 'Classic', rate: 120 }
-            },
-            requests: ''
-          }
-        ];
-      }
-      return ok(storedBookings);
+      const updatedBookings = bookings.map(b => {
+        const room = rooms.find(r => r.id === b.room_id);
+        return { ...b, room };
+      });
+      return ok(updatedBookings);
     }
 
     function updateBooking() {
@@ -422,6 +476,10 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       }
 
       return ok({ message: 'Fake backend data has been reset.' });
+    }
+
+    function getReservationFee() {
+      return ok(RESERVATION_FEES);
     }
 
   }
