@@ -8,26 +8,8 @@ import { Subject, takeUntil, catchError, of } from 'rxjs';
   selector: 'dashboard-ng19-charts',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="h-96">
-        <h3 class="text-xl font-semibold mb-4 text-gray-800">Monthly Bookings Overview</h3>
-        <div id="areaChart" class="w-full h-full"></div>
-      </div>
-      <div class="h-96">
-        <h3 class="text-xl font-semibold mb-4 text-gray-800">Room Status Distribution</h3>
-        <div id="pieChart" class="w-full h-full"></div>
-      </div>
-      <div class="h-96">
-        <h3 class="text-xl font-semibold mb-4 text-gray-800">Revenue Trend</h3>
-        <div id="lineChart" class="w-full h-full"></div>
-      </div>
-      <div class="h-96">
-        <h3 class="text-xl font-semibold mb-4 text-gray-800">Occupancy Rate</h3>
-        <div id="gaugeChart" class="w-full h-full"></div>
-      </div>
-    </div>
-  `
+  templateUrl: './chart-container.component.html',
+  styleUrls: ['./chart-container.component.scss']
 })
 export class ChartsComponent implements OnInit, OnDestroy {
   Highcharts: typeof Highcharts = Highcharts;
@@ -96,21 +78,18 @@ export class ChartsComponent implements OnInit, OnDestroy {
         this.createLineChart(data);
       });
 
-    // Load dashboard analytics for gauge chart
-    this.sharedService.getDashboardAnalytics()
+      this.sharedService.getPaymentMethodDistribution()
       .pipe(
         takeUntil(this.destroy$),
-        catchError(() => of({
-          monthlyBookings: [],
-          roomStatusDistribution: [],
-          revenueData: [],
-          occupancyRate: 75,
-          totalRevenue: 45000,
-          averageStay: 3.2
-        }))
+        catchError(() => of([
+          { name: 'GCash', count: 45 },
+          { name: 'Maya', count: 25 },
+          { name: 'Card', count: 20 },
+          { name: 'Cash', count: 10 }
+        ]))
       )
-      .subscribe(analytics => {
-        this.createGaugeChart(analytics.occupancyRate);
+      .subscribe(data => {
+        this.createPaymentPieChart(data);
         this.isLoading = false;
         this.cdr.detectChanges();
       });
@@ -172,6 +151,8 @@ export class ChartsComponent implements OnInit, OnDestroy {
       credits: { enabled: false },
       plotOptions: {
         pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
           dataLabels: {
             enabled: true,
             format: '<b>{point.name}</b>: {point.percentage:.1f}%'
@@ -226,110 +207,47 @@ export class ChartsComponent implements OnInit, OnDestroy {
     });
   }
 
-  createGaugeChart(occupancyRate: number): void {
-    const gaugeOptions: Highcharts.Options = {
-      chart: { 
-        type: 'gauge',
-        backgroundColor: 'transparent',
-        plotBackgroundColor: undefined,
-        plotBackgroundImage: undefined,
-        plotBorderWidth: 0,
-        plotShadow: false
+  createPaymentPieChart(data: ChartDataItem[]): void {
+    const pieData = data.map(item => ({
+      name: item.name,
+      y: item.count,
+      color: this.getColorForPaymentMethod(item.name)
+    }));
+
+    Highcharts.chart('paymentPieChart', {
+      chart: {
+        type: 'pie',
+        backgroundColor: 'transparent'
       },
       title: {
-        text: 'Occupancy Rate',
+        text: 'Payment Method Distribution',
         style: { color: '#374151', fontSize: '16px', fontWeight: 'bold' }
       },
-      pane: {
-        startAngle: -150,
-        endAngle: 150,
-        background: [{
-          backgroundColor: {
-            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-            stops: [
-              [0, '#FFF'],
-              [1, '#333']
-            ]
-          },
-          borderWidth: 0,
-          outerRadius: '109%',
-          innerRadius: '107%',
-          shape: 'arc'
-        }, {
-          backgroundColor: {
-            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
-            stops: [
-              [0, '#333'],
-              [1, '#FFF']
-            ]
-          },
-          borderWidth: 1,
-          outerRadius: '107%',
-          innerRadius: '105%',
-          shape: 'arc'
-        }, {
-          backgroundColor: '#DDD',
-          borderWidth: 0,
-          outerRadius: '105%',
-          innerRadius: '103%',
-          shape: 'arc'
-        }, {
-          backgroundColor: '#DDD',
-          borderWidth: 0,
-          outerRadius: '103%',
-          innerRadius: '101%',
-          shape: 'arc'
-        }]
-      },
-      yAxis: {
-        min: 0,
-        max: 100,
-        lineWidth: 0,
-        minorTickInterval: undefined,
-        tickPixelInterval: 400,
-        tickWidth: 0,
-        title: {
-          y: -70,
-          text: `${occupancyRate}%`
-        },
-        labels: {
-          distance: 20,
-          style: { fontSize: '16px' }
-        }
-      },
+      series: [{
+        data: pieData,
+        type: 'pie'
+      }],
+      credits: { enabled: false },
       plotOptions: {
-        gauge: {
+        pie: {
+          allowPointSelect: true,
+          cursor: 'pointer',
           dataLabels: {
-            enabled: false
-          },
-          dial: {
-            radius: '80%',
-            backgroundColor: 'silver',
-            baseWidth: 10,
-            baseLength: '0%',
-            rearLength: '0%'
-          },
-          pivot: {
-            backgroundColor: 'silver',
-            radius: 5
+            enabled: true,
+            format: '<b>{point.name}</b>: {point.percentage:.1f}%'
           }
         }
-      },
-      series: [{
-        name: 'Occupancy',
-        data: [occupancyRate],
-        type: 'gauge',
-        dataLabels: {
-          format: '<div style="text-align:center"><span style="font-size:25px;color:black">{y}</span><br/>' +
-            '<span style="font-size:12px;color:silver">%</span></div>'
-        },
-        tooltip: {
-          valueSuffix: '%'
-        }
-      }],
-      credits: { enabled: false }
-    };
+      }
+    });
+  }
 
-    Highcharts.chart('gaugeChart', gaugeOptions);
+  private getColorForPaymentMethod(method: string): string {
+    switch (method.toLowerCase()) {
+      case 'gcash': return '#2D8EFF'; // GCash brand blue
+      case 'maya': return '#00C4B3';  // Maya brand teal
+      case 'card': return '#FFB800';  // Gold for cards
+      case 'cash': return '#4CAF50';  // Green for cash
+      default: return '#6B7280';      // Default gray
+    }
   }
 }
