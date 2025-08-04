@@ -16,6 +16,7 @@ import { catchError, of } from 'rxjs';
 })
 export class DashboardComponent implements OnInit {
   isLoading = true;
+  paymentChartOptions: any[] = [];
   rooms: any[] = [];
   bookings: any[] = [];
   analytics: DashboardAnalytics | null = null;

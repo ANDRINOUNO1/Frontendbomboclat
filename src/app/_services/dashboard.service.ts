@@ -56,6 +56,16 @@ export class DashboardService {
       );
   }
 
+  getPaymentMethodDistribution(): Observable<ChartDataItem[]> {
+    return this.http.get<ChartDataItem[]>(`${environment.apiUrl}/dashboard/payment-methods`)
+      .pipe(
+        catchError(() => {
+          console.log('Payment method API not available, calculating from bookings data');
+          return this.calculatePaymentMethodsFromData();
+        })
+      );
+  }
+
   // Calculate monthly bookings from actual booking data
   private calculateMonthlyBookingsFromData(): Observable<ChartDataItem[]> {
     return this.http.get<Booking[]>(`${environment.apiUrl}/bookings`).pipe(
@@ -247,6 +257,30 @@ export class DashboardService {
 
     return Math.round((totalDays / bookings.length) * 10) / 10;
   }
+  private calculatePaymentMethodsFromData(): Observable<ChartDataItem[]> {
+    return this.http.get<Booking[]>(`${environment.apiUrl}/bookings`).pipe(
+      map(bookings => {
+        const paymentMethodData: { [key: string]: number } = {};
+
+        // Iterate over bookings to count each payment method
+        bookings.forEach(booking => {
+          const paymentMode = booking.payment?.paymentMode;
+          if (paymentMode) {
+            if (!paymentMethodData[paymentMode]) {
+              paymentMethodData[paymentMode] = 0;
+            }
+            paymentMethodData[paymentMode]++;
+          }
+        });
+
+        return Object.keys(paymentMethodData).map(key => ({
+          name: key,
+          count: paymentMethodData[key]
+        }));
+      }),
+      catchError(() => of(this.getMockPaymentMethods()))
+    );
+  }
 
   // Mock data methods for fallback
   private getMockMonthlyBookings(): ChartDataItem[] {
@@ -300,5 +334,14 @@ export class DashboardService {
       totalRevenue: 45000,
       averageStay: 3.2
     };
+  }
+
+  private getMockPaymentMethods(): ChartDataItem[] {
+    return [
+      { name: 'GCash', count: 45 },
+      { name: 'Maya', count: 25 },
+      { name: 'Card', count: 20 },
+      { name: 'Cash', count: 10 }
+    ];
   }
 } 
