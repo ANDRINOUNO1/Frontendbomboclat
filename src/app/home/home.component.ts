@@ -23,16 +23,16 @@ export class HomeComponent implements AfterViewInit {
     {
       name: 'Classic Room',
       description: 'A cozy room with all the essentials for a comfortable stay.',
-      image: 'assets/images/gallery-img-1.jpg',
+      image: 'assets/images/Standard_Room1.jpg',
       price: 80,
       brand: 'Classic',
       tags: ['Cozy', 'Affordable', 'Single Bed'],
       link: '#',
       seasonalImages: [
-        'assets/images/pic-1.png',
-        'assets/images/pic-2.png',
-        'assets/images/pic-3.png',
-        'assets/images/pic-4.png'
+        'assets/images/Pic_1.jpg',
+        'assets/images/Pic_2.jpg',
+        'assets/images/Pic_3.jpg',
+        'assets/images/Pic_4.jpg'
       ]
     },
     {
@@ -53,31 +53,31 @@ export class HomeComponent implements AfterViewInit {
     {
       name: 'Prestige Room',
       description: 'Experience luxury in our premium suite with exclusive services.',
-      image: 'assets/images/gallery-img-2.webp',
+      image: 'assets/images/prestige_rooms.jpg',
       price: 200,
       brand: 'Luxury',
       tags: ['Luxury', 'Suite', 'King Bed'],
       link: '#',
       seasonalImages: [
-        'assets/images/gallery-img-2.webp',
-        'assets/images/gallery-img-1.webp',
-        'assets/images/gallery-img-6.webp',
+        'assets/images/view_room.jpg',
+        'assets/images/Prestige_Room.png',
+        'assets/images/Prestige_tv.png',
         'assets/images/Prestige_Comfort.jpg'
       ]
     },
     {
       name: 'Luxury Suite',
       description: 'Experience luxury in our premium suite with exclusive services.',
-      image: 'assets/images/gallery-img-3.webp',
+      image: 'assets/images/Luxury_Rooms1.jpg',
       price: 200,
       brand: 'Luxury',
-      tags: ['Luxury', 'Suite', 'King Bed'],
+      tags: ['Luxury', 'Suite', 'King Bed'],  
       link: '#',
       seasonalImages: [
-        'assets/images/about-img-3.jpg',
-        'assets/images/home-img-1.jpg',
-        'assets/images/home-img-2.jpg',
-        'assets/images/home-img-3.jpg'
+        'assets/images/tv_luxury.jpg',
+        'assets/images/bath_luxury.png',
+        'assets/images/balcony_luxury.png',
+        'assets/images/pool_luxury.png'
       ]
     }
   ];
